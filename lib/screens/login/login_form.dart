@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:educational/models/login_model.dart';
-// Asumimos que tienes el botón verde creado anteriormente.
-// Si no, puedes copiar el código del Container del botón aquí mismo.
 import 'package:educational/widgets/forms/create_account_button.dart';
+// Asegúrate de importar tu archivo de colores si quieres usar las constantes globales
+// import 'package:educational/utils/colors.dart';
 
 class LoginFormScreen extends StatefulWidget {
   const LoginFormScreen({super.key});
@@ -16,7 +16,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   final _userController = TextEditingController();
   final _passController = TextEditingController();
 
-  // Colores locales (puedes moverlos a colors.dart)
+  // Colores locales
   final Color _kGreen = const Color(0xFF2EC4B6);
   final Color _kBrown = const Color(0xFF5D4037);
 
@@ -30,17 +30,26 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
       // 2. Validar
       if (loginData.validate()) {
-        // ÉXITO
+        // --- ÉXITO ---
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Bienvenido Tlahtoa!'),
+            content: Text('¡Bienvenido a Tlahtoa!'),
             backgroundColor: Color(0xFF2EC4B6),
+            duration: Duration(seconds: 1), // Duración corta
           ),
         );
-        // Aquí navegarías al Dashboard:
-        // Navigator.pushReplacementNamed(context, '/dashboard');
+
+        // --- NAVEGACIÓN ---
+        // Usamos un pequeño delay para que se vea el SnackBar (opcional)
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            // Redirige a la pantalla de "¿Cuál es tu área?"
+            // pushReplacementNamed borra el login del historial para que no puedan volver atrás
+            Navigator.pushReplacementNamed(context, '/area_select');
+          }
+        });
       } else {
-        // ERROR
+        // --- ERROR ---
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Usuario o contraseña incorrectos'),
@@ -54,7 +63,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // Para que el AppBar flote sobre el fondo
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -65,7 +74,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
       ),
       body: Stack(
         children: [
-          // 1. FONDO (Mismo que Home)
+          // 1. FONDO
           Positioned.fill(
             child: Image.asset(
               'assets/images/background.png',
@@ -73,7 +82,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
             ),
           ),
 
-          // 2. FORMULARIO CON SCROLL
+          // 2. FORMULARIO
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -87,7 +96,8 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                       Text(
                         'Iniciar Sesión',
                         style: TextStyle(
-                          fontFamily: 'Rounded',
+                          fontFamily:
+                              'Rounded', // Asegúrate de que coincida con tu pubspec.yaml
                           fontSize: 32,
                           fontWeight: FontWeight.w900,
                           color: _kBrown,
@@ -105,7 +115,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
                       const SizedBox(height: 40),
 
-                      // CAMPO USUARIO
+                      // Campo Usuario
                       _buildCustomField(
                         controller: _userController,
                         label: 'Usuario',
@@ -114,7 +124,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
                       const SizedBox(height: 20),
 
-                      // CAMPO PASSWORD
+                      // Campo Contraseña
                       _buildCustomField(
                         controller: _passController,
                         label: 'Contraseña',
@@ -124,10 +134,9 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
                       const SizedBox(height: 40),
 
-                      // BOTÓN DE ACCIÓN (Reutilizamos el estilo del botón verde)
-                      // Nota: Cambiamos el texto a "ENTRAR"
+                      // Botón Entrar
                       CreateAccountButton(
-                        text: "ENTRAR",
+                        text: "ENTRAR", // Texto personalizado
                         onPressed: _handleLogin,
                       ),
 
@@ -135,7 +144,9 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
                       // Olvidé contraseña
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          // Acción futura para recuperar contraseña
+                        },
                         child: Text(
                           "¿OLVIDASTE TU CONTRASEÑA?",
                           style: TextStyle(
@@ -156,7 +167,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
     );
   }
 
-  // Widget helper para los campos de texto estilo "Duolingo"
   Widget _buildCustomField({
     required TextEditingController controller,
     required String label,
@@ -170,6 +180,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
         border: Border.all(color: Colors.grey.shade300, width: 2),
         boxShadow: [
           BoxShadow(
+            // Compatible con Flutter moderno (evita warning de withOpacity)
             color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, 4),
             blurRadius: 0,
