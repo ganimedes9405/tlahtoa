@@ -9,30 +9,19 @@ class LearningMapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Nota: El AppBar se simplifica, ya que la Navbar del MainContainerScreen
+    // proveerá la navegación principal y el botón del Colibrí.
     return Scaffold(
       backgroundColor: kCream,
       appBar: AppBar(
         title: const Text(
           "Tu Camino Profesional",
-          style: TextStyle(color: Colors.brown),
+          style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.brown[900],
-          ),
-          onPressed: () {
-            // Lógica de navegación segura para regresar al flujo de Onboarding
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            } else {
-              Navigator.pushReplacementNamed(context, '/language_select');
-            }
-          },
-        ),
+        // Eliminamos el 'leading' forzado, ya que este View está dentro del Shell.
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -40,42 +29,30 @@ class LearningMapView extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // CAPA 1: EL CAMINO PUNTEADO (Dibujado detrás)
+              // CAPA 1: EL CAMINO PUNTEADO
               CustomPaint(
-                size: const Size(
-                  double.infinity,
-                  600,
-                ), // Altura estimada del mapa
+                size: const Size(double.infinity, 600),
                 painter: RoadMapPainter(),
               ),
 
               // CAPA 2: LOS NIVELES (Botones circulares)
               Column(
                 children: [
+                  // IMPORTANTE: PASAR EL CONTEXTO
+                  _buildLevelNode(context, "Conceptos\nClave", true, 0),
+                  const SizedBox(height: 80),
                   _buildLevelNode(
-                    context, // <-- CONTEXTO AGREGADO
-                    "Conceptos\nClave",
-                    true,
-                    0,
-                  ), // Nivel 1 (Activo)
-                  const SizedBox(height: 80), // Espacio para la curva
-                  _buildLevelNode(
-                    context, // <-- CONTEXTO AGREGADO
+                    context,
                     "Vocabulario\nTécnico",
                     false,
                     1,
                     isLeft: false,
-                  ), // Nivel 2 (Derecha)
+                  ),
+                  const SizedBox(height: 80),
+                  _buildLevelNode(context, "Prefijos\nRaíces", false, 2),
                   const SizedBox(height: 80),
                   _buildLevelNode(
-                    context, // <-- CONTEXTO AGREGADO
-                    "Prefijos\nRaíces",
-                    false,
-                    2,
-                  ), // Nivel 3 (Izquierda)
-                  const SizedBox(height: 80),
-                  _buildLevelNode(
-                    context, // <-- CONTEXTO AGREGADO
+                    context,
                     "Examen\nFinal",
                     false,
                     3,
@@ -90,23 +67,27 @@ class LearningMapView extends StatelessWidget {
     );
   }
 
-  // Widget helper para crear los círculos de los niveles
+  // Widget helper para crear los círculos de los niveles (REPARADO: RECIBE CONTEXTO)
   Widget _buildLevelNode(
-    BuildContext context,
+    BuildContext context, // <-- Contexto agregado
     String title,
     bool isUnlocked,
     int index, {
     bool isLeft = true,
   }) {
     final double horizontalOffset = isLeft ? -60.0 : 60.0;
+
+    // Si el nivel está desbloqueado, asignamos la función onTap
     final VoidCallback? onTap = isUnlocked
-        ? () => _showLessonDetailsModal(context, title)
+        ? () =>
+              _showLessonDetailsModal(context, title) // <-- Llama al modal
         : null;
 
     return Transform.translate(
       offset: Offset(horizontalOffset, 0),
       child: GestureDetector(
-        onTap: onTap, // El nodo es pulsable si está desbloqueado
+        // <-- RESTAURADO: HACE EL NODO PULSABLE
+        onTap: onTap,
         child: Column(
           children: [
             Container(
@@ -147,7 +128,7 @@ class LearningMapView extends StatelessWidget {
 }
 
 // -------------------------------------------------------------------
-// FUNCIÓN MODAL (showModalBottomSheet) - Etapa 2
+// FUNCIÓN MODAL (showModalBottomSheet) - RESTAURADA
 // -------------------------------------------------------------------
 void _showLessonDetailsModal(BuildContext context, String moduleTitle) {
   showModalBottomSheet(
@@ -181,13 +162,15 @@ void _showLessonDetailsModal(BuildContext context, String moduleTitle) {
               ),
               const Spacer(),
 
-              // BOTÓN 1: Video Player (Etapa 3) - CONEXIÓN REAL
+              // BOTÓN 1: Video Player (Etapa 3) - NAVEGACIÓN REAL
               ElevatedButton.icon(
                 onPressed: () {
                   if (!context.mounted) return;
-                  Navigator.pop(context); // Cierra el modal
-                  // --- NAVEGACIÓN REAL A LA ETAPA 3 ---
-                  Navigator.pushNamed(context, '/video_player_view');
+                  Navigator.pop(context);
+                  Navigator.pushNamed(
+                    context,
+                    '/video_player_view',
+                  ); // <-- NAVEGACIÓN REAL
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryGreen,
@@ -202,13 +185,15 @@ void _showLessonDetailsModal(BuildContext context, String moduleTitle) {
               ),
               const SizedBox(height: 15),
 
-              // BOTÓN 2: Salto a la Práctica (Chatbot - Etapa 4) - CONEXIÓN REAL
+              // BOTÓN 2: Salto a la Práctica (Chatbot - Etapa 4) - NAVEGACIÓN REAL
               OutlinedButton(
                 onPressed: () {
                   if (!context.mounted) return;
-                  Navigator.pop(context); // Cierra el modal
-                  // --- NAVEGACIÓN REAL A LA ETAPA 4 ---
-                  Navigator.pushNamed(context, '/chatbot_interface');
+                  Navigator.pop(context);
+                  Navigator.pushNamed(
+                    context,
+                    '/chatbot_interface',
+                  ); // <-- NAVEGACIÓN REAL
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: kPrimaryGreen,
@@ -229,7 +214,7 @@ void _showLessonDetailsModal(BuildContext context, String moduleTitle) {
 }
 
 // -------------------------------------------------------------------
-// ROAD MAP PAINTER (Lógica de dibujo de línea curva)
+// ROAD MAP PAINTER (Se mantiene sin cambios)
 // -------------------------------------------------------------------
 class RoadMapPainter extends CustomPainter {
   @override
@@ -241,27 +226,10 @@ class RoadMapPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round; // Puntos redondos
 
     final path = Path();
-
-    // Coordenadas aproximadas para conectar los nodos en zig-zag
     path.moveTo(size.width * 0.5 - 60, 40);
-    path.quadraticBezierTo(
-      size.width * 0.2,
-      120, // Punto de control
-      size.width * 0.5 + 60,
-      160, // Destino (Nivel 2)
-    );
-    path.quadraticBezierTo(
-      size.width * 0.8,
-      260,
-      size.width * 0.5 - 60,
-      300, // Destino (Nivel 3)
-    );
-    path.quadraticBezierTo(
-      size.width * 0.2,
-      400,
-      size.width * 0.5 + 60,
-      440, // Destino (Nivel 4)
-    );
+    path.quadraticBezierTo(size.width * 0.2, 120, size.width * 0.5 + 60, 160);
+    path.quadraticBezierTo(size.width * 0.8, 260, size.width * 0.5 - 60, 300);
+    path.quadraticBezierTo(size.width * 0.2, 400, size.width * 0.5 + 60, 440);
 
     canvas.drawPath(path, paint);
   }
