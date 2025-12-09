@@ -15,10 +15,10 @@ class _SpecializationSelectScreenState
   int _selectedIndex = -1;
 
   final List<Map<String, dynamic>> _areas = [
-    {'title': 'Cosmetología', 'icon': Icons.brush},
-    {'title': 'Sistemas', 'icon': Icons.memory},
-    {'title': 'Música', 'icon': Icons.music_note},
-    {'title': 'Turismo', 'icon': Icons.map},
+    {'title': 'Cosmetology', 'icon': Icons.brush},
+    {'title': 'Industrial engineering', 'icon': Icons.memory},
+    {'title': 'Artificial intelligence', 'icon': Icons.music_note},
+    {'title': 'Gastronomy', 'icon': Icons.map},
   ];
 
   @override

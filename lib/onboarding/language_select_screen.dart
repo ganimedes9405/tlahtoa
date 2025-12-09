@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:educational/utils/colors.dart';
-// Asegúrate de tener este widget creado como lo definimos en la etapa anterior
 import 'package:educational/widgets/cards/selection_card.dart';
 
 class LanguageSelectScreen extends StatefulWidget {
@@ -14,21 +13,17 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
   int _selectedIndex = -1;
 
   // Función para manejar la selección y navegación
-  void _handleSelection(int index) {
+  void _handleSelection(int index) async {
     setState(() => _selectedIndex = index);
 
     // Pequeña pausa para que el usuario vea la selección visual (feedback)
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        // Navegar al mapa principal y eliminar el historial anterior
-        // (Login, Selección de Área, etc.)
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/dashboard',
-          (route) => false,
-        );
-      }
-    });
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    // --- REPARACIÓN DE LINTER: Usamos 'mounted' de la clase State ---
+    if (!mounted) return;
+
+    // Navegar al MainContainerScreen y eliminar el historial anterior
+    Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }
 
   @override
@@ -81,7 +76,6 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                 height: 140,
                 child: SelectionCard(
                   title: "Inglés Técnico",
-                  // Puedes cambiar este Icon por un Image.asset si tienes banderas
                   icon: Icons.settings_suggest_rounded,
                   isSelected: _selectedIndex == 0,
                   onTap: () => _handleSelection(0),

@@ -46,12 +46,18 @@ class SelectionCard extends StatelessWidget {
               color: isSelected ? kPrimaryGreen : Colors.brown[400],
             ),
             const SizedBox(height: 12),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? kPrimaryGreen : Colors.brown[800],
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+              ), // Margen lateral
+              child: Text(
+                title,
+                textAlign: TextAlign.center, // <--- ESTO CENTRA EL TEXTO
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? kPrimaryGreen : Colors.brown[800],
+                ),
               ),
             ),
           ],
